@@ -1,0 +1,19 @@
+program Demo1280;
+
+--Incluir otros archivos con constantes, tipos, funciones y handlers
+--Esto es lo mismo que copiar y pegar el contenido del archivo en el lugar donde va la línea #include
+--Se escribe una ruta relativa a este archivo
+--Si alguno de los archivos usa variables o funciones definidas en otro archivo, debe incluirse ese otro archivo antes. El orden importa
+#include ./includes/constantes.iri
+#include ./includes/funciones.iri
+#include ./includes/handlers.iri
+
+--El código que inicia aquí es un handler que se ejecuta cuando se enciende el indicador. Sería lo mismo que escribir "StartupHandler;"
+
+--Variables con scope del handler
+i : integer;
+begin
+	SetTimerMode(TimerEjemplo,TimerOneShot);
+	ApagarSalidas;
+
+end Demo1280;

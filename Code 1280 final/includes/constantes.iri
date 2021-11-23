@@ -1,0 +1,71 @@
+--Constantes
+--Asignación de entradas y salidas. Solo son variables enteras en memoria, pero es más fácil cambiar un número aquí que en todas las llamadas a GPIO en el resto del programa
+
+--ENTRADAS
+SlotSensor0	: constant integer := 0; -- Sensor 0. Cuenta el numero de latas que entran a la zona de pesado y extiende un cilindro para detener las demás
+BitSensor0	: constant integer := 6; -- 
+SlotSensor1	: constant integer := 0; --Sensor 1. Se encuentra en la estación de pesado numero 1
+BitSensor1	: constant integer := 1; --
+SlotSensor2	: constant integer := 0; -- Sensor 2. Se encuentra en la estación de pesado numero 2
+BitSensor2	: constant integer := 7; -- 
+SlotSensor3	: constant integer := 0; -- Sensor 3. Se encuentra en la estación de pesado numero 3
+BitSensor3	: constant integer := 8; -- 
+SlotEmergencyButton : constant integer := 1; -- Emergency button
+BitEmergencyButton : constant integer := 6;
+
+
+--SALIDAS
+--Piston que detiene el batch de latas
+SlotStopPiston_izq	: constant integer := 0;--Salida para electro valvula. Retrae
+BitStopPiston_izq	: constant integer := 2;
+SlotStopPiston_der	: constant integer := 0;--Salida para electro valvula. Extiende
+BitStopPiston_der	: constant integer := 3;
+
+--Piston que levanta la lata estación 3
+SlotLiftPiston3_izq	: constant integer := 0;
+BitLiftPiston3_izq	: constant integer := 4;
+SlotLiftPiston3_der	: constant integer := 0;--Salida para electro valvula. Extiende
+BitLiftPiston3_der	: constant integer := 5;
+
+--Piston que levanta la lata estación 2
+SlotLiftPiston2_izq	: constant integer := 1;--Salida para electro valvula. Retrae
+BitLiftPiston2_izq	: constant integer := 1;
+SlotLiftPiston2_der	: constant integer := 1;--Salida para electro valvula. Extiende
+BitLiftPiston2_der	: constant integer := 2;
+
+--Piston que levanta la lata estación 1
+SlotLiftPiston1_izq	: constant integer := 1;--Salida para electro valvula. Retrae
+BitLiftPiston1_izq	: constant integer := 3;
+SlotLiftPiston1_der	: constant integer := 1;--Salida para electro valvula. Extiende
+BitLiftPiston1_der	: constant integer := 4;
+
+--Conveyor Belt
+SlotConveyorBelt : constant integer := 1;
+BitConveyorBelt : constant integer := 5;
+
+--Filling
+SlotFilling : constant integer := 1;
+BitFilling : constant integer := 7;
+
+-----------------------------------------------------------------
+ConstanteDecimal : constant real := 1.234; --Constante tipo "float" (real)
+PesoObjetivo : stored real; --Una variable o constante declarada con "stored" se guarda en una memoria RAM con batería. Esto hace su valor no volatil si el indicador se apaga, mientras dure la batería
+
+--integer, real, string son los tres tipos de dato básicos
+
+--Constantes para timers (también pueden ser variables o escribirse directo en el código que inicia el timer)
+TimerEjemplo : constant integer := 1; --Timer 1 de 32 disponibles
+DuracionEjemplo : constant integer := 300; --1 significa 0.01 segundos. 200 significa 2.00 segundos
+
+--tipos definidos por el usuario (como enums)
+
+
+--Declaración de variables globales
+
+counter1 : integer := 0;--contador para latas que entran a la zona de pesado
+counter2 : integer := 0;--contador para latas que salen de la zona de pesado
+discharge : integer :=0;--bandera para identificar cuando las latas ya están llenas
+bucketsIn : integer := 0;--bandera para identificar cuando 3 latas han entrado a la estacion de pesado
+pesoE1 : real; -- variable para guardar el peso de la báscula de la estacion 1
+pesoE2 : real; -- variable para guardar el peso de la báscula de la estacion 2
+pesoE3 : real; -- variable para guardar el peso de la báscula de la estacion 3

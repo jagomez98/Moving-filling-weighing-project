@@ -1,0 +1,125 @@
+--Los handlers son subrutinas que se activan por interrupciones. El nombre del handler es fijo. Todos los handlers aparecen en el manual del lenguaje iRite
+--Los handlers tienen prioridades, pero el manual no parece especificarlas. El proceso con mayor prioridad es la conversión de ADC. El proceso con menos prioridad es el envío de datos continuos por puerto serial
+
+-------- Subrutina para botón de emergencia activado-----------------------
+handler DiginS1B6Activate; 
+begin
+	
+	ApagarSalidas;
+	SetDigout(SlotConveyorBelt, BitConveyorBelt, 0);
+	SetDigout(SlotFilling, BitFilling, 0);
+	counter1 := 0;--contador para latas que entran a la zona de pesado
+	counter2 := 0;--contador para latas que salen de la zona de pesado
+	discharge:=0;--bandera para identificar cuando las latas ya están llenas
+	bucketsIn := 0;--bandera para identificar cuando 3 latas han entrado a la estacion de pesado
+end;
+-------------------------------------------------------------------
+
+-------- Subrutina para botón de emergencia desactivado-----------------------
+handler DiginS1B6Deactivate; 
+begin
+	SetDigout(SlotConveyorBelt, BitConveyorBelt, 0);
+	
+end;
+-------------------------------------------------------------------
+
+
+--------Subrutina que se ejecuta cuando el Sensor3 detecta algo---------
+handler DiginS0B8Activate; 
+begin
+	counter2:=counter2+1;
+	if(discharge=0)then
+		WriteLn(2, "Lata en estacion 3");
+		SetDigout(SlotLiftPiston3_der, BitLiftPiston3_der, 1);
+		SetDigout(SlotLiftPiston3_izq, BitLiftPiston3_izq, 0);
+	end if;
+
+	if(counter2=3)then
+		discharge:=0;
+		counter2:=0;
+	end if;
+	
+end;
+---------------------------------------------------------------------
+
+--------Subrutina que se ejecuta cuando el Sensor2 detecta algo---------
+handler DiginS0B7Activate; 
+begin
+	estadoS3 = real;--estado del sensor 3
+	GetDigin(SlotSensor3, BitSensor3, estadoS3); --GetDigin(slot, bit, variabeParaGuardarDato). Regresa un SysCode
+	if(discharge=0 and estadoS3=0)then
+		WriteLn(2, "Lata en estacion 2");
+		SetDigout(SlotLiftPiston2_der, BitLiftPiston2_der, 1);
+		SetDigout(SlotLiftPiston2_izq, BitLiftPiston2_izq, 0);
+	end if;
+	
+end;
+---------------------------------------------------------------------
+
+
+--------Subrutina que se ejecuta cuando el Sensor1 detecta algo---------
+handler DiginS0B1Activate; 
+begin
+	estadoS3 = real;--estado del sensor 3
+	estadoS2 = real;
+	GetDigin(SlotSensor3, BitSensor3, estadoS3); --GetDigin(slot, bit, variabeParaGuardarDato). Regresa un SysCode
+	GetDigin(SlotSensor3, BitSensor3, estadoS2); --GetDigin(slot, bit, variabeParaGuardarDato). Regresa un SysCode
+	if(discharge=0 and estadoS3=0 and estadoS2=0 and bucketsIn=1)then
+		WriteLn(2, "Lata en estacion 1");
+		SetDigout(SlotLiftPiston1_der, BitLiftPiston1_der, 1);
+		SetDigout(SlotLiftPiston1_izq, BitLiftPiston1_izq, 0);
+		WriteLn(2, "Levantando latas");
+		SetTimer(2, DuracionEjemplo);
+		StartTimer(2);
+	end if;
+	
+end;
+---------------------------------------------------------------------
+
+--------Subrutina que se ejecuta cuando el Sensor0 detecta algo---------
+handler DiginS0B6Activate; 
+begin
+	counter1:=counter1+1;
+	if(counter1=3)then
+		SetDigout(SlotStopPiston_der, BitStopPiston_der, 1);
+		SetDigout(SlotStopPiston_izq, BitStopPiston_izq, 0);
+		counter1:=0;
+		bucketsIn:=1;
+	end if;
+		
+	
+end;
+---------------------------------------------------------------------
+
+
+
+
+----------------Subrutina para timer 2----------------------------------
+
+handler Timer2Trip;
+begin
+	LiftBuckets;
+	WriteLn(2,"Pesando latas");
+	pesarLata;
+	ApagarSalidas;
+	bucketsIn:=0;
+	discharge:=1;
+end;
+
+--------------------------------------------------
+
+handler User2KeyPressed;
+begin
+	PromptNumeric("Peso Objetivo (kg):");
+end;
+
+handler UserEntry; --Handler que se activa cuando se introduce un valor en la pantalla táctil
+valReal : real;
+begin
+	if (EventKey = EnterKey) then
+		valReal := StringToReal(GetEntry);
+		if (valReal > 0) then
+			PesoObjetivo := valReal;
+		end if;
+	end if;
+end;

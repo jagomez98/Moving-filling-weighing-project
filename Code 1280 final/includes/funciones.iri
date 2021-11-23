@@ -1,0 +1,51 @@
+--Las funciones ("function") deben regresar un valor. Pueden tomar cero o más argumentos
+function ObtenerVersion : string; --Sin parámetros
+begin
+	return "1.0.0.0";
+end;
+
+--Los procedure no regresan ningun valor
+
+procedure ApagarSalidas;--retrae todos los cilindros
+begin
+	SetDigout(SlotLiftPiston1_der, BitLiftPiston1_der, 0);
+	SetDigout(SlotLiftPiston1_izq, BitLiftPiston1_izq, 1);
+	SetDigout(SlotLiftPiston2_der, BitLiftPiston2_der, 0);
+	SetDigout(SlotLiftPiston2_izq, BitLiftPiston2_izq, 1);
+	SetDigout(SlotLiftPiston3_der, BitLiftPiston3_der, 0);
+	SetDigout(SlotLiftPiston3_izq, BitLiftPiston3_izq, 1);
+	SetDigout(SlotStopPiston_der, BitStopPiston_der, 0);
+	SetDigout(SlotStopPiston_izq, BitStopPiston_izq, 1);
+end;
+
+procedure LiftBuckets;--extiende los cilindros de la estacion 1,2 y 3
+begin
+	SetDigout(SlotLiftPiston1_der, BitLiftPiston1_der, 1);
+	SetDigout(SlotLiftPiston1_izq, BitLiftPiston1_izq, 0);
+	SetDigout(SlotLiftPiston2_der, BitLiftPiston2_der, 1);
+	SetDigout(SlotLiftPiston2_izq, BitLiftPiston2_izq, 0);
+	SetDigout(SlotLiftPiston3_der, BitLiftPiston3_der, 1);
+	SetDigout(SlotLiftPiston3_izq, BitLiftPiston3_izq, 0);
+end;
+
+
+procedure pesarLata;--procedure para pesar la lata
+
+begin	
+	PesoObjetivo := 4.0;
+	SetDigout(SlotFilling, BitFilling, 1);
+	while (pesoE1 < pesoObjetivo and pesoE2 < pesoObjetivo and pesoE3 < pesoObjetivo) loop
+		GetGross(1, Primary, pesoE1); --GetGross(numeroDeBascula, unidades, variableParaGuardarDato). La función regresa un código de éxito o error (SysCode). Para un programa robusto, sería mejor leerlo
+		GetGross(2, Primary, pesoE2);
+		GetGross(3, Primary, pesoE3);
+		--WriteLn(2, RealToString(pesoObjetivo, 2, 2) +" Estacion 1: "+ RealToString(pesoE1, 2, 2));
+		--WriteLn(2, RealToString(pesoObjetivo, 2, 2) +" Estacion 2: "+ RealToString(pesoE2, 2, 2));
+		--WriteLn(2, RealToString(pesoObjetivo, 2, 2) +" Estacion 3: "+ RealToString(pesoE3, 2, 2));
+	end loop;
+	SetDigout(SlotFilling, BitFilling, 0);
+	pesoE1:=0;
+	pesoE2:=0;
+	pesoE3:=0;
+
+end;
+
